@@ -7,7 +7,9 @@ require "yaml"
 require "time"
 require "fileutils"
 require "json"
+require "pry"
 
 module Greenhouse
   BASE_PATH = "/home/pi/greenhouse"
+  BASE_DATA_PATH = "/home/pi/data"
 end

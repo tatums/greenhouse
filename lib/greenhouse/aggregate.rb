@@ -7,38 +7,83 @@ module Greenhouse
       @path = path
     end
 
-    def run
-      report = Struct::Report.new
-      report.light = 0
-      report.humidity = 0
-      report.temperature = 0
-      report.count = 0
-    
-      #data = File.exist?(@path)
-      YAML.load_file(full_path).each_with_object(report) do | hash, report |
-        report.light += hash[:light]
-        report.humidity += hash[:humidity]
-        report.temperature += hash[:temperature]
-        report.count += 1
-      end
+    def ave_light
+      report.light / report.count
+    end
 
-      puts "light: #{report.light / report.count}"
-      puts "humidity: #{report.humidity / report.count}"
-      puts "temperature: #{report.temperature / report.count}"
-      puts report
+    def ave_humidity
+      report.humidity / report.count
+    end
+
+    def ave_temperature
+      report.temperature / report.count
+    end
+
+    def light
+      report.light
+    end
+
+    def humidity
+      report.humidity
+    end
+
+    def temperature
+      report.temperature
+    end
+
+    def count
+      report.count
+    end
+
+    def write
+      File.open(aggregate_path, 'w') do |f|
+        f.write YAML::dump({
+          light: light,
+          temperature: temperature,
+          humidity: humidity,
+          count: count
+        })
+      end
     end
 
     private
 
+    def report
+      @report ||= report_from_file || calculate_report
+    end
 
-    def create_aggregate_yaml(path)
-      puts "Create #{path}"
-      #FileUtils.touch(path)
+    def aggregate_path
+      date = /\d{4}_\d{2}_\d{2}/.match(@path)
+      "#{BASE_DATA_PATH}/aggregates/#{date}.yml"
     end
 
     def full_path
       date = /\d{4}_\d{2}_\d{2}/.match(@path)
-      "#{BASE_PATH}/data/#{date}.yml"
+      "#{BASE_DATA_PATH}/#{date}.yml"
+    end
+
+    def report_from_file
+      if File.exist?(aggregate_path)
+        hash = YAML.load_file(aggregate_path)
+        struct = Struct::Report.new
+        struct.light = hash[:light]
+        struct.humidity = hash[:humidity]
+        struct.temperature = hash[:temperature]
+        struct.count = hash[:count]
+        struct
+      end
+    end
+
+    def calculate_report
+      struct = Struct::Report.new
+      struct.light, struct.humidity, struct.temperature, struct.count = 0,0,0,0
+      YAML.load_file(full_path).each_with_object(struct) do | hash, struct |
+        struct.light += hash[:light]
+        struct.humidity += hash[:humidity]
+        struct.temperature += hash[:temperature]
+        struct.count += 1
+      end
+      struct
     end
 
   end

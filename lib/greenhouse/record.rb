@@ -5,6 +5,12 @@ module Greenhouse
       @data = data
     end
 
+    def self.all
+      Dir.glob("/home/pi/data/*.yml").map do |str|
+        /\d{4}_\d{2}_\d{2}/.match(str).to_s
+      end
+    end
+
     def as_hash
       {
         temperature: temperature, 
