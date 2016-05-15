@@ -5,6 +5,7 @@ module Greenhouse
 
     def initialize(path)
       @path = path
+      report
     end
 
     def ave_light

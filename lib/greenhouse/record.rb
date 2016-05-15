@@ -8,7 +8,12 @@ module Greenhouse
     def self.all
       Dir.glob("/home/pi/data/*.yml").map do |str|
         /\d{4}_\d{2}_\d{2}/.match(str).to_s
-      end
+      end.sort
+    end
+
+    def self.find(date)
+      path = "#{BASE_DATA_PATH}/#{date}.yml"
+      YAML.load_file(path)
     end
 
     def as_hash

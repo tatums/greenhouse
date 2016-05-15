@@ -12,4 +12,10 @@ require "pry"
 module Greenhouse
   BASE_PATH = "/home/pi/greenhouse"
   BASE_DATA_PATH = "/home/pi/data"
+  TIME_ZONE = "CDT"
+
+  def self.to_zone(date_string)
+    t = Time.parse(date_string)
+    t + Time.zone_offset(TIME_ZONE)
+  end
 end
