@@ -21,7 +21,7 @@ module Greenhouse
         temperature: temperature, 
         humidity: humidity,
         light: light,
-        time: Time.now.utc.iso8601
+        time: time
       }
     end
 
@@ -35,6 +35,10 @@ module Greenhouse
 
     def light
       json['light'].to_i
+    end
+
+    def time
+      Time.now.utc.iso8601
     end
 
     def valid?
